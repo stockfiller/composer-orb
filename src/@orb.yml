@@ -4,7 +4,7 @@ display:
     home_url: https://stockfiller.com
     source_url: https://github.com/stockfiller/composer-orb
 commands:
-    install_dependencies:
+    install:
         description: Install Composer dependencies
         parameters:
             cache-version:
@@ -24,7 +24,7 @@ commands:
                 description: Disables installation of require-dev packages
                 type: boolean
             no-scripts:
-                default: false
+                default: true
                 description: Skips the execution of all scripts defined in composer.json file
                 type: boolean
             optimize-autoloader:
@@ -36,10 +36,13 @@ commands:
                 description: Forces installation from package dist even for dev versions
                 type: boolean
         steps:
-            -   restore_cache:
-                    keys:
-                        - << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
-                        - << parameters.cache-version >>-composer
+            -   when:
+                    condition: << parameters.cache-version >>
+                    steps:
+                        -   restore_cache:
+                                keys:
+                                    - << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
+                                    - << parameters.cache-version >>-composer
             -   run:
                     name: Install Composer dependencies
                     command: composer install --no-interaction ${COMPOSER_FLAGS}
@@ -51,9 +54,11 @@ commands:
                             <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
                             <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
                             <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
-            -   save_cache:
-                    key: << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
-                    paths:
-                        - vendor
-                        - ~/.composer/cache
-
+            -   when:
+                    condition: << parameters.cache-version >>
+                    steps:
+                        -   save_cache:
+                                key: << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
+                                paths:
+                                    - vendor
+                                    - ~/.composer/cache
