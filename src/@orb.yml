@@ -43,6 +43,12 @@ commands:
             -   when:
                     condition: << parameters.cache-version >>
                     steps:
+                        -   run:
+                                name: Setup cache usage
+                                command: |-
+                                    if [[ ! -f "composer.lock" ]]; then
+                                      touch composer.lock
+                                    fi
                         -   restore_cache:
                                 keys:
                                     - << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
