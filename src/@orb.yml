@@ -49,16 +49,15 @@ commands:
                                     - << parameters.cache-version >>-composer
             -   run:
                     name: Install Composer dependencies
-                    command: composer install --no-interaction ${COMPOSER_FLAGS}
-                    environment:
-                        COMPOSER_FLAGS: >-
-                            <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
-                            <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
-                            <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
-                            <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
-                            <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
-                            <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
-                            << parameters.flags >>
+                    command: >-
+                        composer install --no-interaction
+                        <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
+                        <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
+                        <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
+                        <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
+                        <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
+                        <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
+                        << parameters.flags >>
             -   when:
                     condition: << parameters.cache-version >>
                     steps:
