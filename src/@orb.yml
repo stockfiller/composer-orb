@@ -44,10 +44,10 @@ commands:
                     condition: << parameters.cache-version >>
                     steps:
                         -   run:
-                                name: Setup Composer cache usage
+                                name: Setup Composer cache
                                 command: |-
                                     if [[ ! -f "composer.lock" ]]; then
-                                      touch composer.lock
+                                      composer update --no-interaction --no-install
                                     fi
                         -   restore_cache:
                                 keys:
