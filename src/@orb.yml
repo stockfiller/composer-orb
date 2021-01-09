@@ -44,7 +44,7 @@ commands:
                     condition: << parameters.cache-version >>
                     steps:
                         -   run:
-                                name: Setup cache usage
+                                name: Setup Composer cache usage
                                 command: |-
                                     if [[ ! -f "composer.lock" ]]; then
                                       touch composer.lock
