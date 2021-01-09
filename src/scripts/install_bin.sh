@@ -11,7 +11,13 @@ then
     exit 1
 fi
 
-php composer-setup.php --quiet
+if [ -z "${PARAM_VERSION}" ]; then
+    VERSION=""
+else
+    VERSION="--version ${PARAM_VERSION}"
+fi
+
+php composer-setup.php --quiet --filename="${PARAM_FILENAME}" --install-dir="${PARAM_INSTALL-DIR}" "${VERSION}"
 RESULT=$?
 rm composer-setup.php
 exit $RESULT

@@ -1,6 +1,19 @@
 description: >-
     Download and install the Composer binary using the officially documented method.
     See: https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+parameters:
+    install-dir:
+        description: You can install composer to a specific directory
+        type: string
+        default: /usr/local/bin
+    filename:
+        description: You can specify the filename
+        type: string
+        default: composer
+    version:
+        description: You can install composer to a specific release
+        type: string
+        default: ""
 steps:
     -   run:
             name: Download and install Composer
