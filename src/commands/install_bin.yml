@@ -1,0 +1,7 @@
+description: >-
+    Download and install the Composer binary using the officially documented method.
+    See: https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+steps:
+    -   run:
+            name: Download and install Composer
+            command: << include(scripts/install_bin.sh) >>
