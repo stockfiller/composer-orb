@@ -16,7 +16,7 @@ commands:
                 description: Autoload classes from the classmap only. Implicitly enables --optimize-autoloader
                 type: boolean
             ignore-platform-reqs:
-                default: true
+                default: false
                 description: Ignore all platform requirements (php & ext- packages)
                 type: boolean
             no-dev:
