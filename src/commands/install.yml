@@ -1,8 +1,8 @@
-description: Install Composer dependencies
+description: Install Composer dependencies and handle caching of dependencies
 parameters:
     cache-version:
         default: v1
-        description: Bump to invalidate cache
+        description: Bump to invalidate cache. Set to empty string to disable caching
         type: string
     classmap-authoritative:
         default: false
@@ -32,15 +32,23 @@ parameters:
         type: string
         description: Composer flags to append to the install command
         default: ""
+    bin:
+        description: Path to composer binary
+        type: string
+        default: composer
+    working-dir:
+        description: If specified, use the given directory as working directory
+        type: string
+        default: ""
 steps:
     -   when:
             condition: << parameters.cache-version >>
             steps:
                 -   run:
-                        name: Setup Composer cache
+                        name: Ensure lock file exists
                         command: |-
-                            if [[ ! -f "composer.lock" ]]; then
-                              composer update --no-interaction --no-install
+                            if [ ! -f "composer.lock" ]; then
+                              << parameters.bin >> update --no-interaction --no-install
                             fi
                 -   restore_cache:
                         keys:
@@ -49,7 +57,8 @@ steps:
     -   run:
             name: Install Composer dependencies
             command: >-
-                composer install --no-interaction
+                << parameters.bin >> install --no-interaction
+                <<# parameters.working-dir >> --working-dir=<< parameters.working-dir >> <</ parameters.working-dir >>
                 <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
                 <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
                 <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>

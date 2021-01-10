@@ -1,0 +1,15 @@
+description: Install Composer dependencies and handle caching
+usage:
+    version: 2.1
+    orbs:
+        composer: stockfiller/composer@1.0.0
+    jobs:
+        bar:
+            steps:
+                - checkout
+                - composer/install
+                # Done! Do whatever you need
+    workflows:
+        foo:
+            jobs:
+                - bar
