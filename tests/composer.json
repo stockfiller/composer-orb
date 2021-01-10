@@ -1,0 +1,7 @@
+{
+    "name": "stockfiller/composer-orb",
+    "type": "project",
+    "require": {
+        "phpunit/phpunit": "^9.0"
+    }
+}
