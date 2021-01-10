@@ -20,26 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 description: >-
-    Download and install the Composer binary using the officially documented method.
-    See: https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
+  Download and install the Composer binary using the officially documented method.
+  See: https://getcomposer.org/doc/faqs/how-to-install-composer-programmatically.md
 parameters:
-    install-dir:
-        description: You can install composer to a specific directory
-        type: string
-        default: /usr/local/bin
-    filename:
-        description: You can specify the filename
-        type: string
-        default: composer
-    version:
-        description: You can install Composer to a specific release
-        type: string
-        default: ""
+  install-dir:
+    description: You can install composer to a specific directory
+    type: string
+    default: /usr/local/bin
+  filename:
+    description: You can specify the filename
+    type: string
+    default: composer
+  version:
+    description: You can install Composer to a specific release
+    type: string
+    default: ""
 steps:
-    -   run:
-            name: Download and install Composer
-            environment:
-                PARAM_INSTALL_DIR: << parameters.install-dir >>
-                PARAM_FILENAME: << parameters.filename >>
-                PARAM_VERSION: << parameters.version >>
-            command: << include(scripts/install_bin.sh) >>
+  - run:
+      name: Download and install Composer
+      environment:
+        PARAM_INSTALL_DIR: << parameters.install-dir >>
+        PARAM_FILENAME: << parameters.filename >>
+        PARAM_VERSION: << parameters.version >>
+      command: << include(scripts/install_bin.sh) >>

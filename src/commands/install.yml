@@ -21,77 +21,77 @@
 # SOFTWARE.
 description: Install Composer dependencies and handle caching of dependencies
 parameters:
-    cache-version:
-        default: v1
-        description: Bump to invalidate cache. Set to empty string to disable caching
-        type: string
-    classmap-authoritative:
-        default: false
-        description: Autoload classes from the classmap only. Implicitly enables --optimize-autoloader
-        type: boolean
-    ignore-platform-reqs:
-        default: false
-        description: Ignore all platform requirements (php & ext- packages)
-        type: boolean
-    no-dev:
-        default: false
-        description: Disables installation of require-dev packages
-        type: boolean
-    no-scripts:
-        default: true
-        description: Skips the execution of all scripts defined in composer.json file
-        type: boolean
-    optimize-autoloader:
-        default: false
-        description: Optimize autoloader during autoloader dump
-        type: boolean
-    prefer-dist:
-        default: true
-        description: Forces installation from package dist even for dev versions
-        type: boolean
-    flags:
-        type: string
-        description: Composer flags to append to the install command
-        default: ""
-    bin:
-        description: Path to composer binary
-        type: string
-        default: composer
-    working-dir:
-        description: If specified, use the given directory as working directory
-        type: string
-        default: ""
+  cache-version:
+    default: v1
+    description: Bump to invalidate cache. Set to empty string to disable caching
+    type: string
+  classmap-authoritative:
+    default: false
+    description: Autoload classes from the classmap only. Implicitly enables --optimize-autoloader
+    type: boolean
+  ignore-platform-reqs:
+    default: false
+    description: Ignore all platform requirements (php & ext- packages)
+    type: boolean
+  no-dev:
+    default: false
+    description: Disables installation of require-dev packages
+    type: boolean
+  no-scripts:
+    default: true
+    description: Skips the execution of all scripts defined in composer.json file
+    type: boolean
+  optimize-autoloader:
+    default: false
+    description: Optimize autoloader during autoloader dump
+    type: boolean
+  prefer-dist:
+    default: true
+    description: Forces installation from package dist even for dev versions
+    type: boolean
+  flags:
+    type: string
+    description: Composer flags to append to the install command
+    default: ""
+  bin:
+    description: Path to composer binary
+    type: string
+    default: composer
+  working-dir:
+    description: If specified, use the given directory as working directory
+    type: string
+    default: ""
 steps:
-    -   when:
-            condition: << parameters.cache-version >>
-            steps:
-                -   run:
-                        name: Ensure lock file exists
-                        command: |-
-                            if [ ! -f "composer.lock" ]; then
-                              << parameters.bin >> update --no-interaction --no-install
-                            fi
-                -   restore_cache:
-                        keys:
-                            - << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
-                            - << parameters.cache-version >>-composer
-    -   run:
-            name: Install Composer dependencies
-            command: >-
-                << parameters.bin >> install --no-interaction
-                <<# parameters.working-dir >> --working-dir=<< parameters.working-dir >> <</ parameters.working-dir >>
-                <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
-                <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
-                <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
-                <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
-                <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
-                <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
-                << parameters.flags >>
-    -   when:
-            condition: << parameters.cache-version >>
-            steps:
-                -   save_cache:
-                        key: << parameters.cache-version >>-composer-{{ checksum "composer.lock" }}
-                        paths:
-                            - vendor
-                            - ~/.composer/cache
+  - when:
+      condition: << parameters.cache-version >>
+      steps:
+        - run:
+            name: Ensure Composer lock file exists
+            command: |-
+              if [ ! -f "<< parameters.working-dir >>/composer.lock" ]; then
+                << parameters.bin >> update --no-interaction --no-install --working-dir=<< parameters.working-dir >>
+              fi
+        - restore_cache:
+            keys:
+              - << parameters.cache-version >>-composer-{{ checksum "<< parameters.working-dir >>/composer.lock" }}
+              - << parameters.cache-version >>-composer
+  - run:
+      name: Install Composer dependencies
+      command: >-
+        << parameters.bin >> install --no-interaction
+        <<# parameters.working-dir >> --working-dir=<< parameters.working-dir >> <</ parameters.working-dir >>
+        <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
+        <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
+        <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
+        <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
+        <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
+        <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
+        << parameters.flags >>
+  - when:
+      condition: << parameters.cache-version >>
+      steps:
+        - save_cache:
+            key: << parameters.cache-version >>-composer-{{ checksum "<< parameters.working-dir >>/composer.lock" }}
+            paths:
+              - vendor
+              - ~/.composer/cache
