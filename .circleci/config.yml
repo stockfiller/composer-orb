@@ -54,12 +54,20 @@ workflows:
   test-pack:
     unless: << pipeline.parameters.run-integration-tests >>
     jobs:
-      - orb-tools/lint
-      - orb-tools/pack
+      - orb-tools/lint:
+          filters: &filters
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+            branches:
+              only: /.+/
+      - orb-tools/pack:
+          filters: *filters
       - shellcheck/check:
+          filters: *filters
           dir: ./src/scripts
           exclude: SC2148
       - orb-tools/publish-dev:
+          filters: *filters
           orb-name: stockfiller/composer
           context: orb-publishing
           requires:
@@ -67,6 +75,7 @@ workflows:
             - orb-tools/pack
             - shellcheck/check
       - orb-tools/trigger-integration-tests-workflow:
+          filters: *filters
           name: trigger-integration-dev
           context: orb-publishing
           requires:
@@ -75,7 +84,8 @@ workflows:
   integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
-      - integration-test
+      - integration-test:
+          filters: *filters
       - orb-tools/dev-promote-prod-from-git-tag:
           orb-name: stockfiller/composer
           context: orb-publishing
@@ -83,7 +93,6 @@ workflows:
           requires:
             - integration-test
           filters:
+            <<: *filters
             branches:
               ignore: /.*/
-            tags:
-              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
