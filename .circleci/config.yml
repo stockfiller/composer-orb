@@ -84,4 +84,4 @@ workflows:
             - integration-test
           filters:
             tags:
-              only: /^\d+.\d+.\d+$/
+              only: /\d+.\d+.\d+/
