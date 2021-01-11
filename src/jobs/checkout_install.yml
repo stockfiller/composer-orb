@@ -19,8 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-description: Install Composer dependencies and handle caching of dependencies
+description: >-
+  Checkout source code and run Composer install. The vendor directory will be exported to the workspace
+  for usage in other jobs.
 parameters:
+  executor:
+    description: Environment to run in
+    type: executor
+    default: default
   cache-version:
     description: Bump to invalidate cache. Set to empty string to disable caching
     default: v1
@@ -61,37 +67,22 @@ parameters:
     description: If specified, use the given directory as working directory
     type: string
     default: "."
+executor: << parameters.executor >>
 steps:
-  - when:
-      condition: << parameters.cache-version >>
-      steps:
-        - run:
-            name: Ensure Composer lock file exists
-            command: |-
-              if [ ! -f "<< parameters.working-dir >>/composer.lock" ]; then
-                << parameters.bin >> update --no-interaction --no-install --working-dir=<< parameters.working-dir >>
-              fi
-        - restore_cache:
-            keys:
-              - << parameters.cache-version >>-composer-{{ checksum "<< parameters.working-dir >>/composer.lock" }}
-              - << parameters.cache-version >>-composer
-  - run:
-      name: Install Composer dependencies
-      command: >-
-        << parameters.bin >> install --no-interaction
-        <<# parameters.working-dir >> --working-dir=<< parameters.working-dir >> <</ parameters.working-dir >>
-        <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
-        <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
-        <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
-        <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
-        <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
-        <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
-        << parameters.flags >>
-  - when:
-      condition: << parameters.cache-version >>
-      steps:
-        - save_cache:
-            key: << parameters.cache-version >>-composer-{{ checksum "<< parameters.working-dir >>/composer.lock" }}
-            paths:
-              - vendor
-              - ~/.composer/cache
+  - checkout
+  - install:
+      cache-version: << parameters.cache-version >>
+      classmap-authoritative: << parameters.classmap-authoritative >>
+      ignore-platform-reqs: << parameters.ignore-platform-reqs >>
+      no-dev: << parameters.no-dev >>
+      no-scripts: << parameters.no-scripts >>
+      optimize-autoloader: << parameters.optimize-autoloader >>
+      prefer-dist: << parameters.prefer-dist >>
+      flags: << parameters.flags >>
+      bin: << parameters.bin >>
+      working-dir: << parameters.working-dir >>
+  - store_artifacts:
+      path: << parameters.working-dir >>/vendor
+  - persist_to_workspace:
+      root: << parameters.working-dir >>/vendor
+      paths: [ "*" ]

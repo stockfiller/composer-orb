@@ -31,8 +31,24 @@ jobs:
     executor: default
     steps:
       - checkout
+      - run: |-
+          cp tests/composer.json composer.json
+          mkdir -p /tmp/composer
+      # Test install Composer globally
+      - composer/install_bin:
+          install-dir: /tmp/composer
+      # Test working directory and flag
       - composer/install:
           working-dir: tests
+          classmap-authoritative: true
+      # Test global Composer
+      - composer/install:
+          bin: /tmp/composer/composer
+      # Test disable cache
+      - composer/install:
+          cache-version: ""
+      # Test default values
+      - composer/install
 
 workflows:
   test-pack:
