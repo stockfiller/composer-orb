@@ -55,10 +55,6 @@ parameters:
     description: Forces installation from package dist even for dev versions
     default: true
     type: boolean
-  flags:
-    description: Composer flags to append to the install command
-    type: string
-    default: ""
   bin:
     description: Path to composer binary
     type: string
@@ -78,7 +74,6 @@ steps:
       no-scripts: << parameters.no-scripts >>
       optimize-autoloader: << parameters.optimize-autoloader >>
       prefer-dist: << parameters.prefer-dist >>
-      flags: << parameters.flags >>
       bin: << parameters.bin >>
       working-dir: << parameters.working-dir >>
   - store_artifacts:

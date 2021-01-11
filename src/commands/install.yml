@@ -49,10 +49,6 @@ parameters:
     description: Forces installation from package dist even for dev versions
     default: true
     type: boolean
-  flags:
-    description: Composer flags to append to the install command
-    type: string
-    default: ""
   bin:
     description: Path to composer binary
     type: string
@@ -86,7 +82,6 @@ steps:
         <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
         <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
         <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
-        << parameters.flags >>
   - when:
       condition: << parameters.cache-version >>
       steps:
