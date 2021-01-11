@@ -83,5 +83,7 @@ workflows:
           requires:
             - integration-test
           filters:
+            branches:
+              ignore: /.*/
             tags:
-              only: /[0-9]+\.[0-9]+\.[0-9]+/
+              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
