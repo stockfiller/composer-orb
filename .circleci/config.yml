@@ -44,6 +44,9 @@ jobs:
           cache-version: ""
       # Test default values
       - composer/install
+      # Test ignore platform reqs
+      - composer/install:
+          ignore-platform-reqs: true
 
 workflows:
   test-pack:

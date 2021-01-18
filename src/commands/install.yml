@@ -65,7 +65,7 @@ steps:
             name: Ensure Composer lock file exists
             command: |-
               if [ ! -f "<< parameters.working-dir >>/composer.lock" ]; then
-                << parameters.bin >> update --no-interaction --no-install --working-dir=<< parameters.working-dir >>
+                << parameters.bin >> update --no-interaction --no-install --working-dir=<< parameters.working-dir >> <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
               fi
         - restore_cache:
             keys:
