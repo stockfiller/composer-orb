@@ -63,25 +63,28 @@ steps:
       steps:
         - run:
             name: Ensure Composer lock file exists
-            command: |-
-              if [ ! -f "<< parameters.working-dir >>/composer.lock" ]; then
-                << parameters.bin >> update --no-interaction --no-install --working-dir=<< parameters.working-dir >> <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
-              fi
+            environment:
+              PARAM_IGNORE_PLATFORM_REQS: << parameters.ignore-platform-reqs >>
+              PARAM_BIN: << parameters.bin >>
+              PARAM_WORKING_DIR: << parameters.working-dir >>
+            command: << include(scripts/ensure_lock.sh) >>
         - restore_cache:
             keys:
               - << parameters.cache-version >>-composer-{{ checksum "<< parameters.working-dir >>/composer.lock" }}
               - << parameters.cache-version >>-composer
   - run:
       name: Install Composer dependencies
-      command: >-
-        << parameters.bin >> install --no-interaction
-        <<# parameters.working-dir >> --working-dir=<< parameters.working-dir >> <</ parameters.working-dir >>
-        <<# parameters.prefer-dist >> --prefer-dist <</ parameters.prefer-dist >>
-        <<# parameters.no-scripts >> --no-scripts <</ parameters.no-scripts >>
-        <<# parameters.ignore-platform-reqs >> --ignore-platform-reqs <</ parameters.ignore-platform-reqs >>
-        <<# parameters.no-dev >> --no-dev <</ parameters.no-dev >>
-        <<# parameters.classmap-authoritative >> --classmap-authoritative <</ parameters.classmap-authoritative >>
-        <<# parameters.optimize-autoloader >> --optimize-autoloader <</ parameters.optimize-autoloader >>
+      environment:
+        PARAM_CACHE_VERSION: << parameters.cache-version >>
+        PARAM_CLASSMAP_AUTHORITATIVE: << parameters.classmap-authoritative >>
+        PARAM_IGNORE_PLATFORM_REQS: << parameters.ignore-platform-reqs >>
+        PARAM_NO_DEV: << parameters.no-dev >>
+        PARAM_NO_SCRIPTS: << parameters.no-scripts >>
+        PARAM_OPTIMIZE_AUTOLOADER: << parameters.optimize-autoloader >>
+        PARAM_PREFER_DIST: << parameters.prefer-dist >>
+        PARAM_BIN: << parameters.bin >>
+        PARAM_WORKING_DIR: << parameters.working-dir >>
+      command: << include(scripts/install.sh) >>
   - when:
       condition: << parameters.cache-version >>
       steps:

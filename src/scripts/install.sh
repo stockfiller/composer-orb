@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ash
 
 # MIT License
 #
@@ -22,31 +22,38 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-EXPECTED_CHECKSUM="$(php -r "echo file_get_contents('https://composer.github.io/installer.sig');")"
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-
-if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
-    echo >&2 'ERROR: Invalid installer checksum'
-    rm composer-setup.php
-    exit 1
+if [ -n "${PARAM_WORKING_DIR}" ]; then
+    set -- "$@" "--working-dir=${PARAM_WORKING_DIR}"
 fi
 
-if [ -n "${PARAM_FILENAME}" ]; then
-    set -- "$@" "--filename=${PARAM_FILENAME}"
+if [ "${PARAM_PREFER_DIST}" -eq 1 ]; then
+    set -- "$@" "--prefer-dist"
 fi
 
-if [ -n "${PARAM_INSTALL_DIR}" ]; then
-    set -- "$@" "--install-dir=${PARAM_INSTALL_DIR}"
+if [ "${PARAM_NO_SCRIPTS}" -eq 1 ]; then
+    set -- "$@" "--no-scripts"
 fi
 
-if [ -n "${PARAM_VERSION}" ]; then
-    set -- "$@" "--version=${PARAM_VERSION}"
+if [ "${PARAM_IGNORE_PLATFORM_REQS}" -eq 1 ]; then
+    set -- "$@" "--ignore-platform-reqs"
 fi
 
-echo "Installing Composer with flags: " "$@"
+if [ "${PARAM_NO_DEV}" -eq 1 ]; then
+    set -- "$@" "--no-dev"
+fi
 
-php composer-setup.php --quiet "$@"
-RESULT=$?
-rm composer-setup.php
-exit $RESULT
+if [ "${PARAM_CLASSMAP_AUTHORITATIVE}" -eq 1 ]; then
+    set -- "$@" "--classmap-authoritative"
+fi
+
+if [ "${PARAM_OPTIMIZE_AUTOLOADER}" -eq 1 ]; then
+    set -- "$@" "--optimize-autoloader"
+fi
+
+if [ -z "${PARAM_CACHE_VERSION}" ]; then
+    set -- "$@" "--no-cache"
+fi
+
+echo "Running command \"${PARAM_BIN} install\" with flags: " "$@"
+
+"${PARAM_BIN}" install --no-interaction "$@"
