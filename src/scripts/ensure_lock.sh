@@ -22,14 +22,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-if [ -n "${PARAM_WORKING_DIR}" ]; then
-    set -- "$@" "--working-dir=${PARAM_WORKING_DIR}"
+if [ ! -f "${PARAM_WORKING_DIR}/composer.lock" ]; then
+    if [ -n "${PARAM_WORKING_DIR}" ]; then
+        set -- "$@" "--working-dir=${PARAM_WORKING_DIR}"
+    fi
+
+    if [ "${PARAM_IGNORE_PLATFORM_REQS}" -eq 1 ]; then
+        set -- "$@" "--ignore-platform-reqs"
+    fi
+
+    echo "Running command \"${PARAM_BIN} update\" with flags: " "$@"
+
+    "${PARAM_BIN}" update --no-interaction --no-install "$@"
 fi
-
-if [ "${PARAM_IGNORE_PLATFORM_REQS}" -eq 1 ]; then
-    set -- "$@" "--ignore-platform-reqs"
-fi
-
-echo "Running command \"${PARAM_BIN} update\" with flags: " "$@"
-
-"${PARAM_BIN}" update --no-interaction --no-install "$@"
